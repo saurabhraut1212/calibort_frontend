@@ -7,8 +7,10 @@ import { uploadToCloudinary } from "../../services/cloudinary";
 import ImageUploader from "../../components/ui/ImageUploader";
 import FormField from "../../components/ui/FormField";
 import Button from "../../components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 const Profile: React.FC = () => {
+  const navigate = useNavigate();
   const email = useAppSelector((s) => s.auth.userEmail ?? null);
   const [user, setUser] = useState<userApi.IUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -46,6 +48,7 @@ const Profile: React.FC = () => {
 
       await userApi.updateUser(user.id, { name: user.name, avatar_url: avatarUrl });
       successToast("Profile updated");
+      navigate("/")
     } catch (err: unknown) {
       if (err instanceof Error) errorToast(err.message);
       else errorToast("Update failed");

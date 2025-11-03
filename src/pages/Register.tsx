@@ -1,5 +1,5 @@
 import React from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import { Formik, Field, Form } from "formik";
 import type { FieldProps } from "formik";
 import * as Yup from "yup";
 import api from "../services/api";
@@ -25,8 +25,8 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow">
+   <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
+      <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg border border-gray-100">
         <h1 className="text-2xl font-semibold mb-4">Register</h1>
 
         <Formik<RegisterFormValues>
@@ -51,37 +51,37 @@ const Register: React.FC = () => {
           {({ isSubmitting }) => (
             <Form>
               <Field name="name">
-                {({ field }: FieldProps<RegisterFormValues["name"]>) => (
-                  <FormField label="Name" {...field} />
+                {({ field ,meta}: FieldProps<RegisterFormValues["name"]>) => (
+                  <FormField 
+                  label="Name" 
+                  {...field} 
+                   error={meta.touched && meta.error ? String(meta.error) : null}
+                  />
                 )}
               </Field>
-              <ErrorMessage
-                name="name"
-                component="div"
-                className="text-red-500 text-sm"
-              />
+              
 
-              <Field name="email">
-                {({ field }: FieldProps<RegisterFormValues["email"]>) => (
-                  <FormField label="Email" {...field} />
-                )}
-              </Field>
-              <ErrorMessage
-                name="email"
-                component="div"
-                className="text-red-500 text-sm"
-              />
+                          <Field name="email">
+            {({ field, meta }: FieldProps<RegisterFormValues["email"]>) => (
+                <FormField
+                label="Email"
+                {...field}
+                error={meta.touched && meta.error ? String(meta.error) : null}
+                />
+            )}
+            </Field>
 
-              <Field name="password">
-                {({ field }: FieldProps<RegisterFormValues["password"]>) => (
-                  <FormField label="Password" type="password" {...field} />
-                )}
-              </Field>
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="text-red-500 text-sm"
-              />
+            {/* Password field with inline error passed to FormField */}
+            <Field name="password">
+            {({ field, meta }: FieldProps<RegisterFormValues["password"]>) => (
+                <FormField
+                label="Password"
+                type="password"
+                {...field}
+                error={meta.touched && meta.error ? String(meta.error) : null}
+                />
+            )}
+            </Field>
 
               <div className="mt-4">
                 <Button type="submit" disabled={isSubmitting}>
@@ -92,7 +92,7 @@ const Register: React.FC = () => {
           )}
         </Formik>
 
-        <p className="text-sm mt-4">
+        <p className="text-sm mt-6 text-center text-gray-600">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-600">
             Login

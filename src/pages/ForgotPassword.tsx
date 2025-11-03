@@ -19,8 +19,8 @@ const Schema = Yup.object({
 
 const ForgotPassword: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow">
+   <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
+      <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg border border-gray-100">
         <h1 className="text-2xl font-semibold mb-4">Forgot Password</h1>
 
         <Formik<ForgotPasswordFormValues>
@@ -44,8 +44,12 @@ const ForgotPassword: React.FC = () => {
           {({ isSubmitting }) => (
             <Form>
               <Field name="email">
-                {({ field }: FieldProps<ForgotPasswordFormValues["email"]>) => (
-                  <FormField label="Email" {...field} />
+                {({ field,meta}: FieldProps<ForgotPasswordFormValues["email"]>) => (
+                  <FormField 
+                  label="Email" 
+                  {...field} 
+                   error={meta.touched && meta.error ? String(meta.error) : null}
+                  />
                 )}
               </Field>
 

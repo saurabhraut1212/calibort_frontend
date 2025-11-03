@@ -1,5 +1,5 @@
 import React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field } from "formik";
 import type { FieldProps } from "formik";
 import * as Yup from "yup";
 import api from "../services/api";
@@ -26,8 +26,8 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
+      <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg border border-gray-100">
         <h1 className="text-2xl font-semibold mb-4">Login</h1>
 
         <Formik<LoginFormValues>
@@ -59,27 +59,30 @@ const Login: React.FC = () => {
           {({ isSubmitting }) => (
             <Form>
               {/* ✅ Strongly typed FieldProps */}
-              <Field name="email">
-                {({ field }: FieldProps<LoginFormValues["email"]>) => (
-                  <FormField label="Email" {...field} />
-                )}
-              </Field>
-              <ErrorMessage
-                name="email"
-                component="div"
-                className="text-red-500 text-sm"
-              />
+             {/* Email field with inline error passed to FormField */}
+            <Field name="email">
+            {({ field, meta }: FieldProps<LoginFormValues["email"]>) => (
+                <FormField
+                label="Email"
+                {...field}
+                error={meta.touched && meta.error ? String(meta.error) : null}
+                />
+            )}
+            </Field>
 
-              <Field name="password">
-                {({ field }: FieldProps<LoginFormValues["password"]>) => (
-                  <FormField label="Password" type="password" {...field} />
-                )}
-              </Field>
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="text-red-500 text-sm"
-              />
+            {/* Password field with inline error passed to FormField */}
+            <Field name="password">
+            {({ field, meta }: FieldProps<LoginFormValues["password"]>) => (
+                <FormField
+                label="Password"
+                type="password"
+                {...field}
+                error={meta.touched && meta.error ? String(meta.error) : null}
+                />
+            )}
+            </Field>
+
+             
 
               <div className="flex items-center justify-between mt-4">
                 <Button type="submit" disabled={isSubmitting}>
@@ -93,9 +96,9 @@ const Login: React.FC = () => {
           )}
         </Formik>
 
-        <p className="text-sm mt-4">
+        <p className="text-sm mt-6 text-center text-gray-600">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-600">
+          <Link to="/register" className="text-blue-600 font-medium hover:underline">
             Register
           </Link>
         </p>

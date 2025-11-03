@@ -26,6 +26,8 @@ type Props = {
 };
 
 const UserForm: React.FC<Props> = ({ initialUser, onSuccess }) => {
+  const isEdit = !!initialUser;
+
   return (
     <Formik<UserFormValues>
       initialValues={{
@@ -36,8 +38,10 @@ const UserForm: React.FC<Props> = ({ initialUser, onSuccess }) => {
       validationSchema={Schema}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          if (initialUser) {
-            await userApi.updateUser(initialUser.id, values);
+          if (isEdit && initialUser) {
+            // Prevent changing email during edit
+            const payload = { ...values, email: initialUser.email };
+            await userApi.updateUser(initialUser.id, payload);
             successToast("User updated");
           } else {
             await userApi.createUser(values);
@@ -57,19 +61,27 @@ const UserForm: React.FC<Props> = ({ initialUser, onSuccess }) => {
     >
       {({ isSubmitting }) => (
         <Form>
+          {/* Name Field */}
           <Field name="name">
             {({ field }: FieldProps<UserFormValues["name"]>) => (
               <FormField label="Name" {...field} />
             )}
           </Field>
 
+          {/* Email Field - ReadOnly in Edit mode */}
           <Field name="email">
             {({ field }: FieldProps<UserFormValues["email"]>) => (
-              <FormField label="Email" {...field} />
+              <FormField
+                label="Email"
+                {...field}
+                readOnly={isEdit}
+                className={isEdit ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""}
+              />
             )}
           </Field>
 
-          {!initialUser && (
+          {/* Password - only in Create mode */}
+          {!isEdit && (
             <Field name="password">
               {({ field }: FieldProps<UserFormValues["password"]>) => (
                 <FormField label="Password" type="password" {...field} />
@@ -79,7 +91,7 @@ const UserForm: React.FC<Props> = ({ initialUser, onSuccess }) => {
 
           <div className="mt-4 text-right">
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save"}
+              {isSubmitting ? "Saving..." : isEdit ? "Update" : "Create"}
             </Button>
           </div>
         </Form>

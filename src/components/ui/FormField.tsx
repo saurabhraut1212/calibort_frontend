@@ -27,9 +27,12 @@ const FormField: React.FC<Props> = ({
   className = ""
 }) => {
   return (
-    <div className={`mb-4 ${className}`}>
+    <div className={`mb-3 ${className}`}>
       {label && (
-        <label htmlFor={name} className="block text-sm font-medium mb-1">
+        <label
+          htmlFor={name}
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           {label}
         </label>
       )}
@@ -42,11 +45,12 @@ const FormField: React.FC<Props> = ({
         onChange={onChange}
         readOnly={readOnly}
         disabled={disabled}
-        className={`w-full px-3 py-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 ${
-          error ? "border-red-400" : "border-gray-200"
+        className={`w-full px-3 py-2 rounded-md bg-white border text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 ${
+          error ? "border-red-500" : "border-gray-300"
         }`}
       />
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+      {/* ✅ Error message tight under the field */}
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );
 };

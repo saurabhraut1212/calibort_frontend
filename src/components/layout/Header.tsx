@@ -1,27 +1,59 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../features/auth/hooks";
 import { clearAuth } from "../../features/auth/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onMenuClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const email = useAppSelector((s) => s.auth.userEmail);
 
+  // 🟢 Dynamically determine header title
+  const getPageTitle = (): string => {
+    const path = location.pathname.toLowerCase();
+
+    if (path === "/" || path.startsWith("/dashboard")) return "Dashboard";
+    if (path.startsWith("/users/")) return "User Details";
+    if (path.startsWith("/users")) return "Users";
+    if (path.startsWith("/profile")) return "Profile";
+
+    return "Calibort System";
+  };
+
+  const pageTitle = getPageTitle();
+
   return (
-    <header className="bg-white border-b px-4 py-3 flex items-center justify-between">
+    <header className="bg-white border-b px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
       <div className="flex items-center gap-3">
-        <button className="md:hidden px-2 py-1 border rounded">☰</button>
-        <h1 className="text-lg font-semibold">Calibort</h1>
+        {/* ☰ Mobile Menu Button */}
+        <button
+          className="md:hidden px-3 py-2 border rounded-md hover:bg-gray-100 transition"
+          onClick={onMenuClick}
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
+
+     
+        <h1 className="text-xl font-semibold text-indigo-600 tracking-wide">
+          {pageTitle}
+        </h1>
       </div>
-      <div className="flex items-center gap-3">
-        <div className="text-sm text-gray-700">{email}</div>
+
+     
+      <div className="flex items-center gap-4">
+        <div className="text-sm text-gray-700 font-medium hidden sm:block">{email}</div>
         <button
           onClick={() => {
             dispatch(clearAuth());
             navigate("/login");
           }}
-          className="px-3 py-1 border rounded"
+          className="px-4 py-1.5 border border-indigo-500 text-indigo-600 rounded-md hover:bg-indigo-50 transition-all duration-200"
         >
           Logout
         </button>
