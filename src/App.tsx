@@ -17,13 +17,11 @@ const AppRoutes: React.FC = () => {
   return (
   
       <Routes>
-        {/* Public */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* Protected layout — Header + Sidebar persist here */}
         <Route
           path="/"
           element={token ? <MainLayout /> : <Navigate to="/login" replace />}
@@ -34,7 +32,6 @@ const AppRoutes: React.FC = () => {
           <Route path="profile" element={<Profile />} />
         </Route>
 
-        {/* Fallback */}
         <Route path="*" element={<Navigate to={token ? "/" : "/login"} replace />} />
       </Routes>
     

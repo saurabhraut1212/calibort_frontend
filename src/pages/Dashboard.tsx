@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-100 text-center px-6 py-10">
-      {/* Title */}
       <motion.h2
         className="text-xl md:text-4xl font-semibold text-indigo-700 mb-4"
         initial={{ opacity: 0, y: -15 }}
@@ -14,7 +13,6 @@ const Dashboard: React.FC = () => {
         Welcome 👋 to Calibort User Management System
       </motion.h2>
 
-      {/* Subtitle */}
       <motion.p
         className="text-gray-600 text-base md:text-lg max-w-2xl mb-12"
         initial={{ opacity: 0 }}
@@ -25,7 +23,6 @@ const Dashboard: React.FC = () => {
         maintain full control of your user data.
       </motion.p>
 
-      {/* Dashboard Cards */}
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-5xl">
         <motion.div
           className="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300"

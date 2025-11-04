@@ -18,7 +18,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Desktop Sidebar - STICKY */}
       <aside className="w-64 hidden md:flex flex-col justify-between bg-gradient-to-b from-indigo-300 to-sky-400 text-white shadow-lg sticky top-0 h-screen overflow-y-auto">
         <div>
           <div className="p-5 text-center">
@@ -41,13 +40,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </nav>
         </div>
 
-        {/* Footer */}
-        <footer className="text-center text-xs text-white/80 py-3 border-t border-white/20">
+       
+        <footer className="text-center text-sm text-white/100 py-3 ">
           © {new Date().getFullYear()} Calibort. All rights reserved.
         </footer>
       </aside>
 
-      {/* Mobile Sidebar (overlay + sliding panel) */}
       {isOpen && (
         <motion.div
           className="fixed inset-0 bg-black/40 z-40 flex"
@@ -93,7 +91,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </nav>
             </div>
 
-            {/* Mobile Footer */}
             <footer>
               © {new Date().getFullYear()} Calibort. All rights reserved.
             </footer>

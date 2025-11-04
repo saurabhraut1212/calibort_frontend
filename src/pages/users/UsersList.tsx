@@ -1,4 +1,3 @@
-// src/pages/users/UsersList.tsx
 import React, { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +21,6 @@ const UsersList: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // typed selector
   const { items, total, loading } = useAppSelector((s) => s.users) as {
     items: userApi.IUser[];
     total: number;
@@ -36,12 +34,7 @@ const UsersList: React.FC = () => {
   const [localRole, setLocalRole] = useState<string | undefined>(authRole);
   const isAdmin = (localRole ?? "user") === "admin";
 
-  // pagination / UI state
   const [page, setPage] = useState<number>(1);
-
-  // Debounced search:
-  // - `searchTerm` updates immediately from user input
-  // - `q` is the debounced value actually used to call API
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [q, setQ] = useState<string>("");
 
@@ -52,7 +45,7 @@ const UsersList: React.FC = () => {
   const limit = 6;
   const [hasCurrentInDb, setHasCurrentInDb] = useState<boolean | null>(null);
 
-  // --- 1) determine whether current logged-in user exists in DB ---
+ 
   useEffect(() => {
     let mounted = true;
     const checkCurrent = async () => {
@@ -61,7 +54,6 @@ const UsersList: React.FC = () => {
         return;
       }
       try {
-        // request all users (or at least enough using total) to reliably find current
         const resp = await userApi.fetchUsers(
           1,
           Math.max(1, total || 1),
@@ -83,17 +75,17 @@ const UsersList: React.FC = () => {
 
   const effectiveFetchLimit = limit;
 
-  // fetch users when page or debounced `q` changes (wait for hasCurrentInDb to be known)
+  
   useEffect(() => {
     if (hasCurrentInDb === null) return;
     dispatch(fetchUsersThunk({ page, limit: effectiveFetchLimit, q }));
   }, [dispatch, page, q, effectiveFetchLimit, hasCurrentInDb]);
 
-  // debounce searchTerm => update q after delay
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setQ(searchTerm.trim());
-    }, 500); // 500ms debounce
+    }, 500); 
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -121,8 +113,7 @@ const UsersList: React.FC = () => {
       mounted = false;
     };
   }, [authRole, currentEmail]);
-
-  // safe error helper
+  
   const getErrorMessage = (
     err: unknown,
     fallback = "Operation failed"
@@ -134,13 +125,11 @@ const UsersList: React.FC = () => {
     return fallback;
   };
 
-  // delete user
   async function handleDelete(): Promise<void> {
     if (!deleteId) return;
     try {
       await userApi.deleteUser(deleteId);
       successToast("User deleted");
-      // refresh page using same effectiveFetchLimit (recomputed)
       dispatch(fetchUsersThunk({ page, limit: effectiveFetchLimit, q }));
     } catch (err: unknown) {
       errorToast(getErrorMessage(err, "Delete failed"));
@@ -149,7 +138,6 @@ const UsersList: React.FC = () => {
     }
   }
 
-  // import reqres
   async function handleImport(): Promise<void> {
     try {
       await userApi.importReqres(2);
@@ -160,11 +148,7 @@ const UsersList: React.FC = () => {
     }
   }
 
-  // show up to `limit` items returned by backend (backend should respect page+limit)
   const visibleItemsToShow = items.slice(0, limit);
-
-  // --- pagination calculation using adjusted total (exclude current user if present) ---
-  // Note: adjustedTotal logic kept as before (you can refine if needed)
   const adjustedTotal =
     hasCurrentInDb === null
       ? Math.max(0, total)
@@ -174,14 +158,12 @@ const UsersList: React.FC = () => {
   const pagesCount = Math.max(1, Math.ceil(adjustedTotal / limit));
   const pagesWindow = getPaginationWindow(page, pagesCount, 2);
 
-  // clamp current page if total changed
   useEffect(() => {
     if (page > pagesCount) setPage(pagesCount);
   }, [page, pagesCount]);
 
   return (
     <div className="p-4">
-      {/* Search and Add Buttons */}
       <div className="flex flex-col md:flex-row justify-between mb-4 gap-2 items-center">
         <input
           type="text"
@@ -190,7 +172,7 @@ const UsersList: React.FC = () => {
           value={searchTerm}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setSearchTerm(e.target.value);
-            setPage(1); // reset page on new typing
+            setPage(1); 
           }}
         />
 
@@ -204,7 +186,6 @@ const UsersList: React.FC = () => {
         )}
       </div>
 
-      {/* User Cards */}
       {loading ? (
         <div className="flex justify-center items-center py-8">
           <p className="text-gray-600">Loading...</p>
@@ -256,7 +237,6 @@ const UsersList: React.FC = () => {
                   </span>
                 </div>
 
-                {/* actions */}
                 <div className="flex gap-2 mt-4">
                   <Button
                     variant="outline"
@@ -293,10 +273,8 @@ const UsersList: React.FC = () => {
         </div>
       )}
 
-      {/* Pagination */}
       {pagesCount > 1 && (
         <div className="flex items-center gap-2 mt-6 justify-center">
-          {/* Prev */}
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             className="px-3 py-1 rounded border border-gray-200 bg-white"
@@ -331,7 +309,6 @@ const UsersList: React.FC = () => {
             );
           })}
 
-          {/* Next */}
           <button
             onClick={() => setPage((p) => Math.min(pagesCount, p + 1))}
             className="px-3 py-1 rounded border border-gray-200 bg-white"
@@ -343,7 +320,6 @@ const UsersList: React.FC = () => {
         </div>
       )}
 
-      {/* Add/Edit Modal */}
       <Modal
         open={openForm}
         onClose={() => {
@@ -362,7 +338,6 @@ const UsersList: React.FC = () => {
         />
       </Modal>
 
-      {/* Confirm Delete */}
       <ConfirmDialog
         open={!!deleteId}
         message="Are you sure you want to delete this user?"

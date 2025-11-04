@@ -8,11 +8,9 @@ type Props = {
 };
 
 const Modal: React.FC<Props> = ({ open, onClose, title, children }) => {
- // replace the Modal return block with this chunk
 if (!open) return null;
 return (
   <div className="fixed inset-0 flex items-center justify-center z-50">
-    {/* backdrop separate element so child content doesn't inherit any opacity */}
     <div
       className="absolute inset-0 bg-black/40"
       onClick={onClose}

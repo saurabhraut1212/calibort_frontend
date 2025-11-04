@@ -1,10 +1,7 @@
-
 export function getPaginationWindow(current: number, totalPages: number, delta = 2): Array<number | "..."> {
-  // ensure sane values
   const total = Math.max(1, totalPages);
   const cur = Math.min(Math.max(1, current), total);
 
-  // If total pages small -> return all page numbers
   if (total <= 7) {
     return Array.from({ length: total }, (_, i) => i + 1);
   }

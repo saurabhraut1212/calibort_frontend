@@ -7,7 +7,6 @@ import Button from "../../components/ui/Button";
 import { successToast, errorToast } from "../../utils/toast";
 import * as userApi from "../../services/userApi";
 
-// ✅ Define proper schema + form values type
 interface UserFormValues {
   name: string;
   email: string;
@@ -39,7 +38,6 @@ const UserForm: React.FC<Props> = ({ initialUser, onSuccess }) => {
       onSubmit={async (values, { setSubmitting }) => {
         try {
           if (isEdit && initialUser) {
-            // Prevent changing email during edit
             const payload = { ...values, email: initialUser.email };
             await userApi.updateUser(initialUser.id, payload);
             successToast("User updated");
@@ -61,14 +59,12 @@ const UserForm: React.FC<Props> = ({ initialUser, onSuccess }) => {
     >
       {({ isSubmitting }) => (
         <Form>
-          {/* Name Field */}
           <Field name="name">
             {({ field }: FieldProps<UserFormValues["name"]>) => (
               <FormField label="Name" {...field} />
             )}
           </Field>
 
-          {/* Email Field - ReadOnly in Edit mode */}
           <Field name="email">
             {({ field }: FieldProps<UserFormValues["email"]>) => (
               <FormField
@@ -80,7 +76,6 @@ const UserForm: React.FC<Props> = ({ initialUser, onSuccess }) => {
             )}
           </Field>
 
-          {/* Password - only in Create mode */}
           {!isEdit && (
             <Field name="password">
               {({ field }: FieldProps<UserFormValues["password"]>) => (

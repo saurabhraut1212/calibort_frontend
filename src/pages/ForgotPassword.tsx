@@ -7,12 +7,11 @@ import { successToast, errorToast } from "../utils/toast";
 import FormField from "../components/ui/FormField";
 import Button from "../components/ui/Button";
 
-// ✅ Define form type
+
 interface ForgotPasswordFormValues {
   email: string;
 }
 
-// ✅ Yup validation schema
 const Schema = Yup.object({
   email: Yup.string().email("Invalid email").required("Email is required")
 });

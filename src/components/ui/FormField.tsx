@@ -1,4 +1,3 @@
-// src/components/ui/FormField.tsx
 import React from "react";
 
 type Props = {
@@ -49,7 +48,6 @@ const FormField: React.FC<Props> = ({
           error ? "border-red-500" : "border-gray-300"
         }`}
       />
-      {/* ✅ Error message tight under the field */}
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );

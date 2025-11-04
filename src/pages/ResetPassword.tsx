@@ -8,12 +8,10 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import FormField from "../components/ui/FormField";
 import Button from "../components/ui/Button";
 
-// ✅ Define proper form type
 interface ResetPasswordFormValues {
   newPassword: string;
 }
 
-// ✅ Yup schema
 const Schema = Yup.object({
   newPassword: Yup.string()
     .min(8, "Password must be at least 8 characters")

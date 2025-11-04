@@ -11,7 +11,7 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" }
 });
 
-// Typed queue item interface (resolve accepts optional token)
+
 interface FailedRequest {
   resolve: (token?: string | null) => void;
   reject: (error: unknown) => void;
@@ -51,7 +51,6 @@ api.interceptors.response.use(
       }
 
       if (isRefreshing) {
-        // IMPORTANT: wrap the resolve so its signature matches FailedRequest.resolve
         return new Promise<string | null>((resolve, reject) => {
           failedQueue.push({
             resolve: (token?: string | null) => resolve(token ?? null),

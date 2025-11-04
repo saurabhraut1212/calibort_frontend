@@ -1,4 +1,3 @@
-// src/components/ui/ImageUploader.tsx
 import React, { useRef, useState } from "react";
 
 type Props = {

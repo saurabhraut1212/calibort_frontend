@@ -1,4 +1,3 @@
-// src/services/userApi.ts
 import api from "./api";
 
 export interface IUser {

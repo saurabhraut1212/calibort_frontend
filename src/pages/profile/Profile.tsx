@@ -1,4 +1,3 @@
-// src/pages/profile/Profile.tsx
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../features/auth/hooks";
 import { successToast, errorToast } from "../../utils/toast";
@@ -17,12 +16,10 @@ const Profile: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [updating, setUpdating] = useState<boolean>(false);
 
-  // ✅ fetch self profile with proper type
   useEffect(() => {
     async function fetchProfile() {
       try {
         const res = await userApi.fetchUsers(1, 10, email ?? "");
-        // Explicitly type `u`
         const match = res.users.find((u: userApi.IUser) => u.email === email) ?? null;
         setUser(match);
       } catch (err: unknown) {

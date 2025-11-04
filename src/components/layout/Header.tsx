@@ -13,7 +13,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const location = useLocation();
   const email = useAppSelector((s) => s.auth.userEmail);
 
-  // 🟢 Dynamically determine header title
   const getPageTitle = (): string => {
     const path = location.pathname.toLowerCase();
 
@@ -31,7 +30,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
    <header className="bg-indigo-50/80 backdrop-blur-sm border-b border-indigo-100 shadow-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
 
       <div className="flex items-center gap-3">
-        {/* ☰ Mobile Menu Button */}
         <button
           className="md:hidden px-3 py-2 border rounded-md hover:bg-gray-100 transition"
           onClick={onMenuClick}

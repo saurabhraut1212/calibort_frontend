@@ -1,4 +1,3 @@
-// src/pages/users/UserDetail.tsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import * as userApi from "../../services/userApi";
@@ -44,7 +43,6 @@ const UserDetail: React.FC = () => {
   return (
     <div className="flex items-center justify-center min-h-[80vh]  px-4">
       <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md text-center border border-gray-100">
-        {/* Avatar */}
         <div className="flex justify-center mb-4">
             {user.avatar_url ? (
           <img
@@ -58,13 +56,9 @@ const UserDetail: React.FC = () => {
           )}
         </div>
 
-        {/* Name */}
         <h2 className="text-2xl font-semibold text-indigo-700">{user.name}</h2>
-
-        {/* Email */}
         <p className="text-gray-600 mt-1 text-sm">{user.email}</p>
 
-        {/* Role & Provider */}
         <div className="mt-4 space-y-1">
           <p className="text-sm text-gray-700">
             <span className="font-medium text-indigo-600">Role:</span> {user.role}
@@ -75,10 +69,8 @@ const UserDetail: React.FC = () => {
           </p>
         </div>
 
-        {/* Divider */}
         <div className="my-5 border-t border-gray-200" />
 
-        {/* Back Button */}
         <Button
           className="w-full"
           onClick={() => navigate("/users")}

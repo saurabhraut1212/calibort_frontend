@@ -10,7 +10,6 @@ import FormField from "../components/ui/FormField";
 import Button from "../components/ui/Button";
 import { errorToast } from "../utils/toast";
 
-// ✅ Define proper type for form values
 interface LoginFormValues {
   email: string;
   password: string;
@@ -58,8 +57,6 @@ const Login: React.FC = () => {
         >
           {({ isSubmitting }) => (
             <Form>
-              {/* ✅ Strongly typed FieldProps */}
-             {/* Email field with inline error passed to FormField */}
             <Field name="email">
             {({ field, meta }: FieldProps<LoginFormValues["email"]>) => (
                 <FormField
@@ -70,7 +67,6 @@ const Login: React.FC = () => {
             )}
             </Field>
 
-            {/* Password field with inline error passed to FormField */}
             <Field name="password">
             {({ field, meta }: FieldProps<LoginFormValues["password"]>) => (
                 <FormField

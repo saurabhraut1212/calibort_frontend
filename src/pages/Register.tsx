@@ -8,7 +8,6 @@ import { successToast, errorToast } from "../utils/toast";
 import FormField from "../components/ui/FormField";
 import Button from "../components/ui/Button";
 
-// ✅ Proper form value interface
 interface RegisterFormValues {
   name: string;
   email: string;
@@ -18,14 +17,16 @@ interface RegisterFormValues {
 const RegisterSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
-  password: Yup.string().min(8, "Minimum 8 characters").required("Password is required")
+  password: Yup.string()
+    .min(8, "Minimum 8 characters")
+    .required("Password is required"),
 });
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-   <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-100">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-100">
       <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg border border-gray-100">
         <h1 className="text-2xl font-semibold mb-4">Register</h1>
 
@@ -51,37 +52,45 @@ const Register: React.FC = () => {
           {({ isSubmitting }) => (
             <Form>
               <Field name="name">
-                {({ field ,meta}: FieldProps<RegisterFormValues["name"]>) => (
-                  <FormField 
-                  label="Name" 
-                  {...field} 
-                   error={meta.touched && meta.error ? String(meta.error) : null}
+                {({ field, meta }: FieldProps<RegisterFormValues["name"]>) => (
+                  <FormField
+                    label="Name"
+                    {...field}
+                    error={
+                      meta.touched && meta.error ? String(meta.error) : null
+                    }
                   />
                 )}
               </Field>
-              
 
-                          <Field name="email">
-            {({ field, meta }: FieldProps<RegisterFormValues["email"]>) => (
-                <FormField
-                label="Email"
-                {...field}
-                error={meta.touched && meta.error ? String(meta.error) : null}
-                />
-            )}
-            </Field>
+              <Field name="email">
+                {({ field, meta }: FieldProps<RegisterFormValues["email"]>) => (
+                  <FormField
+                    label="Email"
+                    {...field}
+                    error={
+                      meta.touched && meta.error ? String(meta.error) : null
+                    }
+                  />
+                )}
+              </Field>
 
-            {/* Password field with inline error passed to FormField */}
-            <Field name="password">
-            {({ field, meta }: FieldProps<RegisterFormValues["password"]>) => (
-                <FormField
-                label="Password"
-                type="password"
-                {...field}
-                error={meta.touched && meta.error ? String(meta.error) : null}
-                />
-            )}
-            </Field>
+              {/* Password field with inline error passed to FormField */}
+              <Field name="password">
+                {({
+                  field,
+                  meta,
+                }: FieldProps<RegisterFormValues["password"]>) => (
+                  <FormField
+                    label="Password"
+                    type="password"
+                    {...field}
+                    error={
+                      meta.touched && meta.error ? String(meta.error) : null
+                    }
+                  />
+                )}
+              </Field>
 
               <div className="mt-4">
                 <Button type="submit" disabled={isSubmitting}>
