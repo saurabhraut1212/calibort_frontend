@@ -19,7 +19,7 @@ const Schema = Yup.object({
 
 const ForgotPassword: React.FC = () => {
   return (
-   <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
+   <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-100">
       <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg border border-gray-100">
         <h1 className="text-2xl font-semibold mb-4">Forgot Password</h1>
 

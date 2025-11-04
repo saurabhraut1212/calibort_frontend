@@ -10,10 +10,12 @@ import "./index.css";
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <App />
-        <Toaster position="top-right" />
-      </BrowserRouter>
+       
+       <BrowserRouter>
+         <App />
+       </BrowserRouter>
+      <Toaster position="top-right" />
+    
     </Provider>
   </React.StrictMode>
 );

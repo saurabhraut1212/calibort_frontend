@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 
 const Dashboard: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-indigo-50 text-center px-6 py-10">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-100 text-center px-6 py-10">
       {/* Title */}
       <motion.h2
-        className="text-4xl md:text-5xl font-semibold text-indigo-700 mb-4"
+        className="text-xl md:text-4xl font-semibold text-indigo-700 mb-4"
         initial={{ opacity: 0, y: -15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}

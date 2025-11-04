@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import * as userApi from "../../services/userApi";
 import Button from "../../components/ui/Button";
+import { FaUserCircle } from "react-icons/fa";
 
 const UserDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -41,15 +42,20 @@ const UserDetail: React.FC = () => {
     );
 
   return (
-    <div className="flex items-center justify-center min-h-[80vh] bg-gradient-to-br from-gray-50 to-indigo-50 px-4">
+    <div className="flex items-center justify-center min-h-[80vh]  px-4">
       <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md text-center border border-gray-100">
         {/* Avatar */}
         <div className="flex justify-center mb-4">
+            {user.avatar_url ? (
           <img
-            src={user.avatar_url ?? "https://via.placeholder.com/120"}
+            src={user.avatar_url }
             alt={user.name}
             className="w-28 h-28 rounded-full object-cover border-4 border-indigo-100 shadow-sm"
-          />
+          />) : (
+            <div className="w-28 h-28 rounded-full bg-indigo-100 flex items-center justify-center border-4 border-indigo-100 shadow-sm">
+              <FaUserCircle className="text-indigo-300" size={80} />
+            </div>
+          )}
         </div>
 
         {/* Name */}

@@ -28,7 +28,8 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const pageTitle = getPageTitle();
 
   return (
-    <header className="bg-white border-b px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
+   <header className="bg-indigo-50/80 backdrop-blur-sm border-b border-indigo-100 shadow-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+
       <div className="flex items-center gap-3">
         {/* ☰ Mobile Menu Button */}
         <button

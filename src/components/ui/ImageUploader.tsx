@@ -24,12 +24,12 @@ const ImageUploader: React.FC<Props> = ({ onFileSelected, valueUrl }) => {
           alt="avatar"
           className="w-24 h-24 object-cover rounded-full border"
         />
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="absolute bottom-0 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded-full"
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        className="absolute bottom-0 right-0 bg-gray-800 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md hover:bg-gray-700"
         >
-          ✎
+        ✎
         </button>
       </div>
 

@@ -6,13 +6,13 @@ import Sidebar from "../components/layout/Sidebar";
 const MainLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
-  const openSidebar = () => setSidebarOpen(true);
+//   const openSidebar = () => setSidebarOpen(true);
   const closeSidebar = () => setSidebarOpen(false);
   const toggleSidebar = () => setSidebarOpen((s) => !s);
-  console.log(openSidebar)
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    // make this a full-height flex container so sidebar + main align correctly
+    <div className="min-h-screen flex bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-100">
       {/* Sidebar (desktop visible, mobile toggled) */}
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
 
@@ -20,8 +20,8 @@ const MainLayout: React.FC = () => {
         {/* Header receives handler to toggle */}
         <Header onMenuClick={toggleSidebar} />
 
-        {/* Page content */}
-        <main className="flex-1">
+        {/* Page content: keep transparent so background shows through */}
+        <main className="flex-1 bg-transparent">
           <Outlet />
         </main>
       </div>

@@ -10,7 +10,8 @@ import * as userApi from "../../services/userApi";
 import UserForm from "./UserForm";
 import Modal from "../../components/comman/Modal";
 import ConfirmDialog from "../../components/comman/ConfirmDialog";
-import { FaUserCircle } from "react-icons/fa"; 
+import { FaUserCircle } from "react-icons/fa";
+import { getPaginationWindow } from "../../utils/pagination";
 
 interface AuthState {
   userEmail: string | null;
@@ -37,23 +38,66 @@ const UsersList: React.FC = () => {
 
   // pagination / UI state
   const [page, setPage] = useState<number>(1);
+
+  // Debounced search:
+  // - `searchTerm` updates immediately from user input
+  // - `q` is the debounced value actually used to call API
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [q, setQ] = useState<string>("");
+
   const [openForm, setOpenForm] = useState<boolean>(false);
   const [editUser, setEditUser] = useState<userApi.IUser | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const limit = 6;
-//   const fetchLimit = limit + 1;
+  const [hasCurrentInDb, setHasCurrentInDb] = useState<boolean | null>(null);
 
-  // whether current logged-in user exists in DB (used to adjust pagination)
-  const [hasCurrentInDb, setHasCurrentInDb] = useState<boolean>(false);
-
-  // fetch users for current page (use fetchLimit to allow client-side trimming)
+  // --- 1) determine whether current logged-in user exists in DB ---
   useEffect(() => {
-    dispatch(fetchUsersThunk({ page, limit, q }));
-  }, [dispatch, page, q]);
+    let mounted = true;
+    const checkCurrent = async () => {
+      if (!currentEmail) {
+        if (mounted) setHasCurrentInDb(false);
+        return;
+      }
+      try {
+        // request all users (or at least enough using total) to reliably find current
+        const resp = await userApi.fetchUsers(
+          1,
+          Math.max(1, total || 1),
+          currentEmail
+        );
+        const exists = resp.users.some(
+          (u: userApi.IUser) => u.email === currentEmail
+        );
+        if (mounted) setHasCurrentInDb(exists);
+      } catch {
+        if (mounted) setHasCurrentInDb(false);
+      }
+    };
+    checkCurrent();
+    return () => {
+      mounted = false;
+    };
+  }, [currentEmail, total]);
 
-  // find role if not present in auth slice
+  const effectiveFetchLimit = limit;
+
+  // fetch users when page or debounced `q` changes (wait for hasCurrentInDb to be known)
+  useEffect(() => {
+    if (hasCurrentInDb === null) return;
+    dispatch(fetchUsersThunk({ page, limit: effectiveFetchLimit, q }));
+  }, [dispatch, page, q, effectiveFetchLimit, hasCurrentInDb]);
+
+  // debounce searchTerm => update q after delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setQ(searchTerm.trim());
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   useEffect(() => {
     let mounted = true;
     const fetchRole = async () => {
@@ -62,10 +106,11 @@ const UsersList: React.FC = () => {
         return;
       }
       if (!currentEmail) return;
-
       try {
         const resp = await userApi.fetchUsers(1, 100, currentEmail);
-        const found = resp.users.find((u: userApi.IUser) => u.email === currentEmail);
+        const found = resp.users.find(
+          (u: userApi.IUser) => u.email === currentEmail
+        );
         if (mounted) setLocalRole(found?.role ?? "user");
       } catch {
         // ignore
@@ -77,34 +122,11 @@ const UsersList: React.FC = () => {
     };
   }, [authRole, currentEmail]);
 
-  // determine whether current logged-in user exists in DB (run when email or total changes)
-  // IMPORTANT: we now request across all users using `total` as limit so we don't miss the user
-  useEffect(() => {
-    let mounted = true;
-    const checkCurrent = async () => {
-      if (!currentEmail) {
-        if (mounted) setHasCurrentInDb(false);
-        return;
-      }
-
-      try {
-        // use total as the limit so we search across the whole user set
-        const resp = await userApi.fetchUsers(1, Math.max(1, total), currentEmail);
-        const exists = resp.users.some((u: userApi.IUser) => u.email === currentEmail);
-        if (mounted) setHasCurrentInDb(exists);
-      } catch {
-        if (mounted) setHasCurrentInDb(false);
-      }
-    };
-
-    checkCurrent();
-    return () => {
-      mounted = false;
-    };
-  }, [currentEmail, total]); // re-check when total changes (import/delete)
-
   // safe error helper
-  const getErrorMessage = (err: unknown, fallback = "Operation failed"): string => {
+  const getErrorMessage = (
+    err: unknown,
+    fallback = "Operation failed"
+  ): string => {
     if (err instanceof Error) return err.message;
     if (isAxiosError(err)) {
       return err.response?.data?.message ?? err.message ?? fallback;
@@ -118,7 +140,8 @@ const UsersList: React.FC = () => {
     try {
       await userApi.deleteUser(deleteId);
       successToast("User deleted");
-      dispatch(fetchUsersThunk({ page, limit, q }));
+      // refresh page using same effectiveFetchLimit (recomputed)
+      dispatch(fetchUsersThunk({ page, limit: effectiveFetchLimit, q }));
     } catch (err: unknown) {
       errorToast(getErrorMessage(err, "Delete failed"));
     } finally {
@@ -131,26 +154,30 @@ const UsersList: React.FC = () => {
     try {
       await userApi.importReqres(2);
       successToast("Imported ReqRes users");
-      dispatch(fetchUsersThunk({ page, limit, q }));
+      dispatch(fetchUsersThunk({ page, limit: effectiveFetchLimit, q }));
     } catch (err: unknown) {
       errorToast(getErrorMessage(err, "Import failed"));
     }
   }
 
-  // filter out current logged-in user from display and trim to `limit`
-  const filtered = items.filter((u: userApi.IUser) => u.email !== currentEmail);
-  const visibleItemsToShow = filtered.slice(0, limit);
+  // show up to `limit` items returned by backend (backend should respect page+limit)
+  const visibleItemsToShow = items.slice(0, limit);
 
   // --- pagination calculation using adjusted total (exclude current user if present) ---
-  const adjustedTotal = hasCurrentInDb ? Math.max(0, total - 1) : total;
+  // Note: adjustedTotal logic kept as before (you can refine if needed)
+  const adjustedTotal =
+    hasCurrentInDb === null
+      ? Math.max(0, total)
+      : hasCurrentInDb
+      ? Math.max(0, total)
+      : total;
   const pagesCount = Math.max(1, Math.ceil(adjustedTotal / limit));
+  const pagesWindow = getPaginationWindow(page, pagesCount, 2);
 
-  // if current page became out of range due to total change, clamp it
+  // clamp current page if total changed
   useEffect(() => {
     if (page > pagesCount) setPage(pagesCount);
   }, [page, pagesCount]);
-
-  const pagesArray = Array.from({ length: pagesCount }, (_, i) => i + 1);
 
   return (
     <div className="p-4">
@@ -160,8 +187,11 @@ const UsersList: React.FC = () => {
           type="text"
           placeholder="Search by name or email"
           className="w-full md:w-1/2 border border-gray-200 px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
-          value={q}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQ(e.target.value)}
+          value={searchTerm}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setSearchTerm(e.target.value);
+            setPage(1); // reset page on new typing
+          }}
         />
 
         {isAdmin && (
@@ -203,19 +233,21 @@ const UsersList: React.FC = () => {
                            transform transition-transform duration-200 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-200"
                 aria-label={`View details for ${u.name}`}
               >
-               <div className="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-indigo-50 shadow flex items-center justify-center bg-gray-50">
-                {u.avatar_url ? (
+                <div className="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-indigo-50 shadow flex items-center justify-center bg-gray-50">
+                  {u.avatar_url ? (
                     <img
-                    src={u.avatar_url}
-                    alt={u.name}
-                    className="w-full h-full object-cover"
+                      src={u.avatar_url}
+                      alt={u.name}
+                      className="w-full h-full object-cover"
                     />
-                ) : (
+                  ) : (
                     <FaUserCircle className="text-gray-400 w-16 h-16" />
-                )}
+                  )}
                 </div>
 
-                <h3 className="text-lg font-semibold text-gray-800">{u.name}</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {u.name}
+                </h3>
                 <p className="text-sm text-gray-500 mt-1">{u.email}</p>
 
                 <div className="mt-2">
@@ -228,6 +260,7 @@ const UsersList: React.FC = () => {
                 <div className="flex gap-2 mt-4">
                   <Button
                     variant="outline"
+                    className="border-indigo-400 text-indigo-600 hover:bg-indigo-50 focus:ring-indigo-200 disabled:opacity-50"
                     onClick={(e: React.MouseEvent) => {
                       e.stopPropagation();
                       setEditUser(u);
@@ -241,12 +274,15 @@ const UsersList: React.FC = () => {
 
                   <Button
                     variant="outline"
+                    className="border-red-400 text-red-600 hover:bg-red-50 focus:ring-red-200 disabled:opacity-50"
                     onClick={(e: React.MouseEvent) => {
                       e.stopPropagation();
                       setDeleteId(u.id);
                     }}
                     disabled={!canDelete}
-                    title={!canDelete ? "You cannot delete this user" : "Delete user"}
+                    title={
+                      !canDelete ? "You cannot delete this user" : "Delete user"
+                    }
                   >
                     Delete
                   </Button>
@@ -259,17 +295,51 @@ const UsersList: React.FC = () => {
 
       {/* Pagination */}
       {pagesCount > 1 && (
-        <div className="flex justify-center gap-2 mt-6">
-          {pagesArray.map((p: number) => (
-            <button
-              key={p}
-              onClick={() => setPage(p)}
-              className={`px-3 py-1 rounded ${page === p ? "bg-indigo-600 text-white" : "border border-gray-200 bg-white"}`}
-              aria-current={page === p ? "page" : undefined}
-            >
-              {p}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 mt-6 justify-center">
+          {/* Prev */}
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="px-3 py-1 rounded border border-gray-200 bg-white"
+            aria-label="Previous page"
+            disabled={page === 1}
+          >
+            ‹
+          </button>
+
+          {pagesWindow.map((p, idx) => {
+            if (p === "...") {
+              return (
+                <span key={`el-${idx}`} className="px-2 text-gray-400 select-none">
+                  ...
+                </span>
+              );
+            }
+            const pageNum = p as number;
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setPage(pageNum)}
+                className={`px-3 py-1 rounded ${
+                  page === pageNum
+                    ? "bg-indigo-600 text-white"
+                    : "border border-gray-200 bg-white"
+                }`}
+                aria-current={page === pageNum ? "page" : undefined}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+
+          {/* Next */}
+          <button
+            onClick={() => setPage((p) => Math.min(pagesCount, p + 1))}
+            className="px-3 py-1 rounded border border-gray-200 bg-white"
+            aria-label="Next page"
+            disabled={page === pagesCount}
+          >
+            ›
+          </button>
         </div>
       )}
 
@@ -287,7 +357,7 @@ const UsersList: React.FC = () => {
           onSuccess={() => {
             setOpenForm(false);
             setEditUser(null);
-            dispatch(fetchUsersThunk({ page, limit, q }));
+            dispatch(fetchUsersThunk({ page, limit: effectiveFetchLimit, q }));
           }}
         />
       </Modal>
