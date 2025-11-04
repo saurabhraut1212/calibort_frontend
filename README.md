@@ -1,73 +1,122 @@
-# React + TypeScript + Vite
+# ✨ Calibort — Backend✨
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+REST API for Calibort — user management backend written in Node.js + TypeScript using raw SQL (MySQL) via mysql2/promise. Implements auth (access/refresh JWT), user CRUD, role-based access, avatar upload (Cloudinary), password reset, ReqRes import, migrations & seed scripts.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🔥 Features
 
-## Expanding the ESLint configuration
+- Local authentication (bcrypt + JWT access/refresh)
+- Password reset (SMTP)
+- Roles: admin / user
+- Paginated users list + search
+- Import users from ReqRes (bulk upsert)
+- Avatar upload (Cloudinary)
+- DB migrations and seed (admin user)
+- Server-side validation and error handling
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## ⚙️ Project Setup
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 🧠 Requirements
+Make sure you have:
+- Node.js 18+ (or similar stable LTS)
+- npm or yarn
+- MySQL server (local) or managed MySQL (Render, PlanetScale, RDS)
+- Cloudinary account & SMTP credentials for email
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 🔧 Environment Variables
+
+Create a `.env` file :
+
+```env
+# Database
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_NAME=calibort
+DATABASE_USER=root
+DATABASE_PASSWORD=Saurabh@123
+
+# Server
+PORT=4000
+NODE_ENV=development
+
+# Auth
+JWT_SECRET=replace_this_in_production
+ACCESS_TOKEN_EXPIRES_SEC=900
+REFRESH_TOKEN_EXPIRES_DAYS=30
+
+# Email (Gmail example)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=you@example.com
+SMTP_PASS=<app-password>
+EMAIL_FROM="Calibort <you@example.com>"
+RESET_TOKEN_EXPIRES_MIN=60
+
+# Frontend
+FRONTEND_URL=https://calibort-frontend.vercel.app
+
+# Cloudinary (if used)
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+
+```
+##  1.Install & run (local)
+```
+git clone https://github.com/saurabhraut1212/calibort_backend.git
+cd calibort_backend
+
+```
+##  2.Install
+```
+npm install
+```
+## 3.Ensure DB exists
+```
+CREATE DATABASE calibort;
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 4.Run migrations
 ```
+npm run migrate
+```
+### 5.Seed admin
+```
+npm run seed
+```
+
+### 6.Start dev server
+```
+npm run dev
+```
+
+
+
+
+## 📸 Screenshots
+
+### 🔐 Login Page
+![Login Page](public/screenshots/login.png)
+
+### 🔐 Register Page
+![Login Page](public/screenshots/register.png)
+
+### 🏠 Dashboard
+![Dashboard](public/screenshots/dashboard.png)
+
+### 👥 Users List
+![Users List](public/screenshots/usersList.png)
+
+### 👤 Profile Page
+![Profile Page](public/screenshots/profile.png)
+
+### 👤 User Details Page
+![Profile Page](public/screenshots/details.png)
+
